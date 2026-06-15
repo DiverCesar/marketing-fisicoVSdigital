@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Comparativo</title>
+<link rel="icon" href="https://thumbs.dreamstime.com/b/ilustraci%C3%B3n-de-doodle-icono-desarrollo-juegos-marketing-vector-dibujo-signo-s%C3%ADmbolo-aislado-380254369.jpg">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&family=Space+Mono:wght@400;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #030303;
+    --surface: #0a0a0c;
+    --surface2: #111115;
+    --border: rgba(255,255,255,0.18);
+    --trad: #c8a26b;
+    --trad-dim: rgba(200,162,107,0.15);
+    --trad-glow: rgba(200,162,107,0.4);
+    --dig: #5b8dee;
+    --dig-dim: rgba(91,141,238,0.15);
+    --dig-glow: rgba(0,243,255,0.4);
+    --accent: #e85d8a;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --white: #ffffff;
+    --color-tradicional: #A75D5D;
+    --color-digital: #FF007F;
+  }
+
+  html, body {
+    width: 100%; height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+  }
+
+  body {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
+
+  .noise {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 2px, transparent 2px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 2px, transparent 2px);
+    background-size: 48px 48px;
+  }
+
+  header {
+    position: relative; z-index: 10;
+    padding: 1.5vh 3vw;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 2px solid var(--border);
+    background: linear-gradient(180deg, rgba(10,10,12,0.95) 0%, transparent 100%);
+  }
+
+  .header-left {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+
+  .course-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(8px, 1.2vh, 12px);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .main-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(16px, 2.5vw, 28px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--white);
+    text-shadow: 0 0 20px rgba(255,255,255,0.1);
+  }
+
+  .main-title .txt-tradicional {
+    color: var(--color-tradicional);
+  }
+
+  .main-title .txt-digital {
+    color: var(--color-digital);
+  }
+
+  .header-right {
+    display: flex; align-items: center; gap: 24px;
+  }
+
+  .author-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(8px, 1.1vh, 11px);
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  .author-tag strong { color: var(--white); display: block; font-size: clamp(10px, 1.4vh, 14px); letter-spacing: 0.15em; }
+
+  .center-badge {
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .vs-pill {
+    background: rgba(17, 17, 21, 0.85);
+    backdrop-filter: blur(8px);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 0.8vh 1.5vw;
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(9px, 1.3vh, 13px);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--white);
+  }
+
+  .dot-trad { width: 8px; height: 8px; border-radius: 50%; background: var(--trad); box-shadow: 0 0 12px var(--trad); }
+  .dot-dig { width: 8px; height: 8px; border-radius: 50%; background: var(--dig); box-shadow: 0 0 12px var(--dig); }
+
+  .canvas {
+    position: relative; z-index: 5;
+    width: 100%; height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    grid-template-rows: repeat(5, 1fr);
+    gap: 0.8vh 0;
+    padding: 1.2vh 2vw;
+  }
+
+  .line-container {
+    grid-column: 2;
+    grid-row: 1 / 6;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  .vertical-line {
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, var(--border) 5%, var(--border) 95%, transparent);
+  }
+
+  .card {
+    position: relative;
+    border-radius: 12px;
+    padding: 1vh 1.5vw;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.6vh;
+    z-index: 5;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 12px;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(255,255,255,0), rgba(255,255,255,0));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    transition: all 0.5s ease;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .card.trad:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9), 0 0 20px var(--trad-glow);
+    z-index: 10;
+    background: #080706;
+  }
+
+  .card.trad:hover::before {
+    background: linear-gradient(135deg, var(--trad), var(--accent));
+    opacity: 1;
+  }
+
+  .card.dig:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.9), 0 0 20px var(--dig-glow);
+    z-index: 10;
+    background: #05080c;
+  }
+
+  .card.dig:hover::before {
+    background: linear-gradient(135deg, var(--dig), #00f3ff);
+    opacity: 1;
+  }
+
+  .card-header {
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+
+  .card-icon {
+    flex-shrink: 0;
+    width: clamp(24px, 3.5vh, 36px); height: clamp(24px, 3.5vh, 36px);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.4s ease;
+  }
+
+  .card:hover .card-icon {
+    transform: rotate(360deg) scale(1.1);
+  }
+
+  .card.trad .card-icon { background: var(--trad-dim); border: 1px solid rgba(200,162,107,0.3); }
+  .card.dig .card-icon { background: var(--dig-dim); border: 1px solid rgba(91,141,238,0.3); }
+
+  .card-icon svg { width: 50%; height: 50%; transition: fill 0.4s ease; }
+  .card.trad .card-icon svg { fill: var(--trad); }
+  .card.dig .card-icon svg { fill: var(--dig); }
+
+  .card.trad:hover .card-icon svg { fill: var(--white); }
+  .card.dig:hover .card-icon svg { fill: var(--white); }
+
+  .card-meta { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+  .card-dim {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(7px, 0.9vh, 10px);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    font-weight: 700;
+  }
+
+  .card.trad .card-dim { color: var(--trad); }
+  .card.dig .card-dim { color: var(--dig); }
+
+  .card-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(12px, 1.7vh, 18px);
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  .card-body {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(9px, 1.25vh, 13px);
+    line-height: 1.35;
+    color: #cbd5e1;
+    font-weight: 400;
+    text-align: justify;
+  }
+
+  .tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(8px, 1vh, 10px);
+    letter-spacing: 0.1em;
+    padding: 0.3vh 0.6vw;
+    border-radius: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+  }
+
+  .card.trad .tag { background: var(--trad-dim); color: var(--trad); border: 1px solid rgba(200,162,107,0.4); }
+  .card.dig .tag { background: var(--dig-dim); color: var(--dig); border: 1px solid rgba(91,141,238,0.4); }
+
+  .card:hover .tag {
+    background: transparent;
+    color: var(--white);
+    border-color: var(--white);
+  }
+
+  .dim-node {
+    grid-column: 2;
+    justify-self: center;
+    align-self: center;
+    width: clamp(28px, 4.5vh, 44px);
+    height: clamp(28px, 4.5vh, 44px);
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.4s ease;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+  }
+
+  .dim-node svg {
+    width: 45%;
+    height: 45%;
+    fill: var(--muted);
+    transition: fill 0.4s ease;
+  }
+
+  .dim-node:hover {
+    border-color: var(--accent);
+    background: rgba(232,93,138,0.15);
+    box-shadow: 0 0 25px rgba(232,93,138,0.5);
+    transform: scale(1.15);
+  }
+
+  .dim-node:hover svg {
+    fill: var(--accent);
+  }
+
+  .glow-orb {
+    position: fixed; pointer-events: none; z-index: 0;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+  }
+
+  @keyframes orbit-cw {
+    0% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(15vw, -15vh) scale(1.2); }
+    50% { transform: translate(30vw, 0) scale(1); }
+    75% { transform: translate(15vw, 15vh) scale(0.8); }
+    100% { transform: translate(0, 0) scale(1); }
+  }
+
+  @keyframes orbit-ccw {
+    0% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(-15vw, 15vh) scale(1.2); }
+    50% { transform: translate(-30vw, 0) scale(1); }
+    75% { transform: translate(-15vw, -15vh) scale(0.8); }
+    100% { transform: translate(0, 0) scale(1); }
+  }
+
+  .orb-trad { width: 50vw; height: 50vw; background: var(--trad); top: -10vh; left: -10vw; animation: orbit-cw 25s ease-in-out infinite; }
+  .orb-dig { width: 50vw; height: 50vw; background: var(--dig); bottom: -10vh; right: -10vw; animation: orbit-ccw 30s ease-in-out infinite; }
+  .orb-accent { width: 30vw; height: 30vw; background: var(--accent); top: 35vh; left: 35vw; opacity: 0.08; animation: orbit-cw 40s linear infinite reverse; }
+
+  @keyframes scanline {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(100vh); }
+  }
+
+  .scanline {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(transparent 50%, rgba(255,255,255,0.015) 50%);
+    background-size: 100% 4px;
+  }
+
+  @media (max-width: 900px) {
+    body { overflow-y: auto; height: auto; display: block; }
+    .canvas { display: flex; flex-direction: column; gap: 2vh; padding: 2vh 4vw; }
+    .line-container, .dim-node { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+<div class="grid-bg"></div>
+<div class="scanline"></div>
+<div class="glow-orb orb-trad"></div>
+<div class="glow-orb orb-dig"></div>
+<div class="glow-orb orb-accent"></div>
+
+<header>
+  <div class="header-left">
+    <span class="course-tag">Marketing, redes y ventas</span>
+    <h1 class="main-title">Marketing     <span class="txt-tradicional">Tradicional</span> vs 
+    <span class="txt-digital">Digital</span></h1>
+  </div>
+  <div class="center-badge">
+    <div class="vs-pill">
+      <div class="dot-trad"></div>
+      TRADICIONAL
+      <span style="color:var(--muted)">-</span>
+      DIGITAL
+      <div class="dot-dig"></div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="author-tag">
+      <strong>César Luis Galarza Villalva</strong>
+      Estudio de Videojuegos Independiente
+    </div>
+  </div>
+</header>
+
+<main class="canvas">
+
+  <div class="line-container">
+    <div class="vertical-line"></div>
+  </div>
+
+  <div class="dim-node" style="grid-row: 1;">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm2 17h-4v1c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-1z"/></svg>
+  </div>
+  <div class="dim-node" style="grid-row: 2;">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.71 10.29c-1.1-1.1-2.92-1.07-3.99.07l-6.8 6.8c-.39.39-.39 1.02 0 1.41l2.59 2.59c.39.39 1.02.39 1.41 0l6.8-6.8c1.13-1.06 1.17-2.88.07-3.99zM22.7 6.42L20.4 4.1c-.39-.39-1.02-.39-1.41 0L17 6.1c-.2.2-.45.3-.7.3s-.5-.1-.7-.3l-3.6-3.6c-.39-.39-1.02-.39-1.41 0L8.8 4.3c-.39.39-.39 1.02 0 1.41l2.6 2.6c.39.39 1.02.39 1.41 0l1.8-1.8c.2-.2.45-.3.7-.3s.5.1.7.3l3.6 3.6c.2.2.45.3.7.3s.5-.1.7-.3l2.2-2.2c.39-.39.39-1.02 0-1.41z"/></svg>
+  </div>
+  <div class="dim-node" style="grid-row: 3;">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+  </div>
+  <div class="dim-node" style="grid-row: 4;">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z"/></svg>
+  </div>
+  <div class="dim-node" style="grid-row: 5;">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+  </div>
+
+
+  <div class="card trad" style="grid-column: 1; grid-row: 1;">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+      </div>
+      <div class="card-meta">
+        <div class="card-dim">Concepto</div>
+        <div class="card-title">Presencia física en medios masivos</div>
+      </div>
+    </div>
+    <div class="card-body">
+      Conjunto de estrategias comunicacionales que operan a través de soportes físicos y medios de comunicación masivos con cobertura geográfica acotada. Para un estudio de videojuegos, esto se traduce en presencia en ferias de la industria como la Game Developers Conference o la Gamescom, cobertura editorial en revistas especializadas impresas, y publicidad en televisión durante horarios de programación temática gamer.
+    </div>
+    <div class="tags">
+      <span class="tag">Masivo</span>
+      <span class="tag">Unidireccional</span>
+      <span class="tag">Ferias</span>
+    </div>
+  </div>
+
+  <div class="card dig" style="grid-column: 3; grid-row: 1;">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93V18c0-.55-.45-1-1-1s-1 .45-1 1v1.93C7.06 19.48 4.52 16.94 4.07 14H6c.55 0 1-.45 1-1s-.45-1-1-1H4.07C4.52 9.06 7.06 6.52 10 6.07V8c0 .55.45 1 1 1s1-.45 1-1V6.07C15.94 6.52 18.48 9.06 18.93 12H17c-.55 0-1 .45-1 1s.45 1 1 1h1.93c-.45 2.94-2.99 5.48-5.93 5.93z"/></svg>
+      </div>
+      <div class="card-meta">
+        <div class="card-dim">Concepto</div>
+        <div class="card-title">Ecosistema interactivo digital</div>
+      </div>
+    </div>
+    <div class="card-body">
+      Conjunto de acciones de comunicación y posicionamiento ejecutadas en entornos digitales que permiten una relación bidireccional entre el estudio y su comunidad. El marketing digital de un indie studio trasciende la promoción del producto hacia la construcción de una identidad de marca a través de cada touchpoint online, desde el perfil en Steam hasta los canales de Discord donde los jugadores co-crean la narrativa del estudio.
+    </div>
+    <div class="tags">
+      <span class="tag">Bidireccional</span>
+      <span class="tag">Interactivo</span>
+      <span class="tag">Ecosistémico</span>
+    </div>
+  </div>
+
+  <div class="card trad" style="grid-column: 1; grid-row: 2;">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
+      </div>
+      <div class="card-meta">
+        <div class="card-dim">Herramientas</div>
+        <div class="card-title">TV - Radio - Prensa - Ferias</div>
+      </div>
+    </div>
+    <div class="card-body">
+      Publicidad televisiva en franjas especializadas, avisos en revistas del sector como Edge o GAME, presencia en stands físicos de ferias internacionales, relaciones públicas con prensa escrita especializada, y materiales promocionales impresos. La distribución en cajas físicas constituye también un canal de marketing tangible que refuerza el posicionamiento de marca mediante el diseño del empaque.
+    </div>
+    <div class="tags">
+      <span class="tag">Revistas</span>
+      <span class="tag">Medios Gaming</span>
+      <span class="tag">Caja física</span>
+    </div>
+  </div>
+
+  <div class="card dig" style="grid-column: 3; grid-row: 2;">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/></svg>
+      </div>
+      <div class="card-meta">
+        <div class="card-dim">Herramientas</div>
+        <div class="card-title">Steam - Discord - TikTok - SEO</div>
+      </div>
+    </div>
+    <div class="card-body">
+      Página de producto en Steam con gestión activa de wishlists y actualizaciones de desarrollo, comunidad propia en Discord como núcleo de engagement, contenido en TikTok e Instagram mediante devlogs en formato breve, colaboraciones con streamers en Twitch y YouTube, campañas de paid media segmentadas por género de juego, y SEO orientado a keywords de nicho en plataformas de distribución digital.
+    </div>
+    <div class="tags">
+      <span class="tag">Streaming</span>
+      <span class="tag">Comunidades virtuales</span>
+      <span class="tag">Paid Media</span>
+    </div>
+  </div>
+
+  <div class="card trad" style="grid-column: 1; grid-row: 3;">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </div>
+      <div class="card-meta">
+        <div class="card-dim">Ventajas</div>
+        <div class="card-title">Credibilidad y alcance consolidado</div>
+      </div>
+    </div>
+    <div class="card-body">
+      La aparición en medios de comunicación establecidos genera una percepción de legitimidad difícil de replicar en canales propios. Una reseña positiva en una publicación especializada con décadas de trayectoria transmite autoridad al estudio de forma inmediata. Adicionalmente, los medios masivos alcanzan segmentos de público casual que no participan activamente en comunidades digitales de gaming.
+    </div>
+    <div class="tags">
+      <span class="tag">Cobertura mediática</span>
+      <span class="tag">Merchandising</span>
+      <span class="tag">Presencia Háptica</span>
+    </div>
+  </div>
+
+  <div class="card dig" style="grid-column: 3; grid-row: 3;">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </div>
+      <div class="card-meta">
+        <div class="card-dim">Ventajas</div>
+        <div class="card-title">Medición exacta y comunidad</div>
+      </div>
+    </div>
+    <div class="card-body">
+      Cada campaña de marketing digital genera datos accionables en tiempo real que resguardan las conversiones, costo por wishlist en Steam, retención de comunidad en Discord, y engagement por pieza de contenido. Para un estudio indie con presupuesto limitado, esto permite iterar la estrategia de comunicación con base en evidencia, construyendo simultáneamente una comunidad de early adopters que amplifica el mensaje de forma orgánica.
+    </div>
+    <div class="tags">
+      <span class="tag">ROI medible</span>
+      <span class="tag">Tiempo real</span>
+      <span class="tag">Comunidad descentralizada</span>
+    </div>
+  </div>
+
+  <div class="card trad" style="grid-column: 1; grid-row: 4;">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </div>
+      <div class="card-meta">
+        <div class="card-dim">Desventajas</div>
+        <div class="card-title">Costos prohibitivos e impacto oculto</div>
+      </div>
+    </div>
+    <div class="card-body">
+      La inversión requerida para acceder a medios tradicionales de impacto resulta incompatible con la estructura financiera de un estudio independiente en etapa temprana. La ausencia de métricas de atribución directa impide determinar qué porcentaje de las ventas proviene de una campaña específica. La rigidez de los formatos y los tiempos de producción elevados limitan además la capacidad de respuesta.
+    </div>
+    <div class="tags">
+      <span class="tag">Costo alto</span>
+      <span class="tag">Sin métricas</span>
+      <span class="tag">Fricción logística</span>
+    </div>
+  </div>
+
+  <div class="card dig" style="grid-column: 3; grid-row: 4;">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </div>
+      <div class="card-meta">
+        <div class="card-dim">Desventajas</div>
+        <div class="card-title">Saturación y dependencia externa</div>
+      </div>
+    </div>
+    <div class="card-body">
+      El alcance orgánico de los canales digitales ha disminuido consistentemente en la última década por efecto de los algoritmos de distribución de contenido. El estudio queda sujeto a los cambios unilaterales de política de plataformas como Steam, TikTok o YouTube, lo que representa un riesgo estratégico considerable. La sobreproducción de contenido en el ecosistema gaming digital genera competencia feroz.
+    </div>
+    <div class="tags">
+      <span class="tag">Algoritmos</span>
+      <span class="tag">Saturación</span>
+      <span class="tag">Efimeridad</span>
+    </div>
+  </div>
+
+  <div class="card trad" style="grid-column: 1; grid-row: 5;">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div class="card-meta">
+        <div class="card-dim">Aplicacion al estudio</div>
+        <div class="card-title">Posicionamiento físico industrial</div>
+      </div>
+    </div>
+    <div class="card-body">
+      El estudio aplica marketing tradicional como estrategia de posicionamiento institucional en momentos clave del ciclo de vida del producto como lo son la participación en ferias regionales de videojuegos para networking con publishers e inversores, envío de kits de prensa físicos a medios especializados en fases de anuncio oficial, y gestión de relaciones públicas con medios impresos para cubrir hitos de desarrollo.
+    </div>
+    <div class="tags">
+      <span class="tag">Networking</span>
+      <span class="tag">Publishers</span>
+      <span class="tag">Anclas de permanencia</span>
+    </div>
+  </div>
+
+  <div class="card dig" style="grid-column: 3; grid-row: 5;">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div class="card-meta">
+        <div class="card-dim">Aplicacion al estudio</div>
+        <div class="card-title">Comunidad desde el desarrollo</div>
+      </div>
+    </div>
+    <div class="card-body">
+      El eje central del marketing digital del estudio es la construcción de comunidad durante la fase de desarrollo, contando con devlogs semanales en TikTok e Instagram mostrando el proceso creativo, servidor de Discord como espacio de co-working con la comunidad temprana, campañas de wishlist en Steam con tracking de conversión por canal, y colaboraciones con creadores especializados en gaming indie.
+    </div>
+    <div class="tags">
+      <span class="tag">Wishlist</span>
+      <span class="tag">Indie creators</span>
+      <span class="tag">Ubicuidad</span>
+    </div>
+  </div>
+
+</main>
+
+</body>
+</html>
